@@ -253,6 +253,16 @@ button,input,select{font:inherit}
         </div>
         <div class="card" style="margin-top:13px">
           <div class="section-head"><div><h3>PHAC soil impact on orchard KPIs</h3><p class="muted">The same six KPI outputs used in Scenario Lab, isolated here for Punchbowl Haven soil treatment analysis.</p></div><span class="badge" id="phacKpiMode">MEASURED BASELINE</span></div>
+          <h4 style="margin:10px 0 7px">Scenario-controls baseline <span class="badge" id="phacBaselineLabel">Standard baseline · neutral soil</span></h4>
+          <div class="results">
+            <div class="result"><small>Crop quality</small><b id="phacBaseQuality">84</b></div>
+            <div class="result"><small>Yield index</small><b id="phacBaseYield">98</b></div>
+            <div class="result"><small>Water efficiency</small><b id="phacBaseWater">96%</b></div>
+            <div class="result"><small>Waste risk</small><b id="phacBaseWaste">Medium</b></div>
+            <div class="result"><small>Gross value index</small><b id="phacBaseValue">91</b></div>
+            <div class="result"><small>Confidence</small><b id="phacBaseConfidence">0.76</b></div>
+          </div>
+          <h4 style="margin:13px 0 7px">Selected PHAC soil profile</h4>
           <div class="results">
             <div class="result"><small>Crop quality</small><b id="phacImpactQuality">79</b></div>
             <div class="result"><small>Yield index</small><b id="phacImpactYield">92</b></div>
@@ -264,7 +274,7 @@ button,input,select{font:inherit}
           <div class="engine-row"><span class="engine-status ready" id="phacImpactEngine">PHAC soil model · measured baseline</span></div>
           <div class="comparison-panel">
             <div class="comparison-head"><b>Measured soil vs treatment scenario</b><span id="phacImpactMeta">Baseline: Hyeon-ri 1004 soil test</span></div>
-            <table class="comparison-table"><thead><tr><th>KPI</th><th>Measured soil</th><th id="phacImpactCurrentHead">Current view</th><th>Δ</th></tr></thead><tbody id="phacImpactBody"></tbody></table>
+            <table class="comparison-table"><thead><tr><th>KPI</th><th>Scenario baseline</th><th>Measured soil</th><th id="phacImpactCurrentHead">Current view</th><th>Soil Δ</th><th>Treatment Δ</th></tr></thead><tbody id="phacImpactBody"></tbody></table>
           </div>
           <div class="notice"><b>Interpretation:</b> <span id="phacImpactRecommendation">Current acidity and low calcium/magnesium constrain the modeled orchard outcome.</span></div>
         </div>
@@ -470,14 +480,19 @@ function phacKpiResult(values,projected){
  return {quality,yieldIdx,waterEff,waste,value,conf};
 }
 const PHAC_MEASURED_VALUES=PHAC_SOIL.map(item=>({...item,projected:item.current}));
+const PHAC_NEUTRAL_SOIL={ph:6.25,om:30,p:250,k:.45,ca:5.5,mg:1.75,ec:.8};
+const PHAC_SCENARIO_BASE_VALUES=PHAC_SOIL.map(item=>({...item,projected:PHAC_NEUTRAL_SOIL[item.key]}));
 function formatPhacImpactValue(key,value){if(key==='conf')return value.toFixed(2);if(key==='waterEff')return Math.round(value)+'%';return Math.round(value)}
+function formatPhacDelta(key,value){return key==='conf'?value.toFixed(2):(value>=0?'+':'')+Math.round(value)}
+function phacDeltaClass(metric,delta){const impact=delta*(metric.lower?-1:1);return Math.abs(delta)<.005?'delta-neutral':impact>0?'delta-positive':'delta-negative'}
 function renderPhacImpact(values){
- const projected=phacMode==='lime',current=phacKpiResult(values,projected),baseline=phacKpiResult(PHAC_MEASURED_VALUES,false),risk=current.waste<18?'Low':current.waste<35?'Medium':'High';
+ const projected=phacMode==='lime',scenarioBaseline=phacKpiResult(PHAC_SCENARIO_BASE_VALUES,false),measured=phacKpiResult(PHAC_MEASURED_VALUES,false),current=phacKpiResult(values,projected),baseRisk=scenarioBaseline.waste<18?'Low':scenarioBaseline.waste<35?'Medium':'High',risk=current.waste<18?'Low':current.waste<35?'Medium':'High';
+ phacBaseQuality.textContent=Math.round(scenarioBaseline.quality);phacBaseYield.textContent=Math.round(scenarioBaseline.yieldIdx);phacBaseWater.textContent=Math.round(scenarioBaseline.waterEff)+'%';phacBaseWaste.textContent=baseRisk;phacBaseValue.textContent=Math.round(scenarioBaseline.value);phacBaseConfidence.textContent=scenarioBaseline.conf.toFixed(2);phacBaselineLabel.textContent=phacScenarioLabel+' · neutral soil';
  phacImpactQuality.textContent=Math.round(current.quality);phacImpactYield.textContent=Math.round(current.yieldIdx);phacImpactWater.textContent=Math.round(current.waterEff)+'%';phacImpactWaste.textContent=risk;phacImpactValue.textContent=Math.round(current.value);phacImpactConfidence.textContent=current.conf.toFixed(2);
- phacKpiMode.textContent=projected?'PROJECTED AFTER LIME':'MEASURED BASELINE';phacImpactCurrentHead.textContent=projected?'After lime':'Current soil';phacImpactEngine.textContent=projected?'PHAC linked scenario model · projected, not measured':'PHAC linked scenario model · measured baseline';phacImpactMeta.textContent=projected?phacScenarioLabel+' · measured soil vs treatment projection':phacScenarioLabel+' · Hyeon-ri 1004 measured soil baseline';
+ phacKpiMode.textContent=projected?'PROJECTED AFTER LIME':'MEASURED SOIL';phacImpactCurrentHead.textContent=projected?'After lime':'Current soil';phacImpactEngine.textContent=projected?'PHAC linked scenario model · projected, not measured':'PHAC linked scenario model · measured soil';phacImpactMeta.textContent=phacScenarioLabel+' · standard baseline → measured soil → '+(projected?'lime projection':'current soil');
  const metrics=[{key:'quality',label:'Quality',lower:false},{key:'yieldIdx',label:'Yield',lower:false},{key:'waterEff',label:'Water efficiency',lower:false},{key:'waste',label:'Waste score',lower:true},{key:'value',label:'Value',lower:false},{key:'conf',label:'Confidence',lower:false}];
- phacImpactBody.innerHTML=metrics.map(metric=>{const delta=current[metric.key]-baseline[metric.key],impact=delta*(metric.lower?-1:1),cls=Math.abs(delta)<.005?'delta-neutral':impact>0?'delta-positive':'delta-negative',formatted=metric.key==='conf'?delta.toFixed(2):(delta>=0?'+':'')+Math.round(delta);return '<tr><td>'+metric.label+'</td><td>'+formatPhacImpactValue(metric.key,baseline[metric.key])+'</td><td>'+formatPhacImpactValue(metric.key,current[metric.key])+'</td><td class="'+cls+'">'+formatted+'</td></tr>'}).join('');
- phacImpactRecommendation.textContent=projected?'KPI differences isolate the lime response while holding the current PHAC Scenario controls constant. Confidence is lower because treatment values remain projected.':'These KPI values combine the measured soil profile with the current PHAC Scenario controls.';
+ phacImpactBody.innerHTML=metrics.map(metric=>{const soilDelta=measured[metric.key]-scenarioBaseline[metric.key],treatmentDelta=current[metric.key]-measured[metric.key];return '<tr><td>'+metric.label+'</td><td>'+formatPhacImpactValue(metric.key,scenarioBaseline[metric.key])+'</td><td>'+formatPhacImpactValue(metric.key,measured[metric.key])+'</td><td>'+formatPhacImpactValue(metric.key,current[metric.key])+'</td><td class="'+phacDeltaClass(metric,soilDelta)+'">'+formatPhacDelta(metric.key,soilDelta)+'</td><td class="'+phacDeltaClass(metric,treatmentDelta)+'">'+formatPhacDelta(metric.key,treatmentDelta)+'</td></tr>'}).join('');
+ phacImpactRecommendation.textContent=projected?'Scenario baseline matches the original Scenario Lab controls. Soil Δ shows the measured Punchbowl soil effect; Treatment Δ isolates the projected lime response.':'Scenario baseline matches the original Scenario Lab controls. Soil Δ shows the effect of applying the measured Punchbowl soil profile.';
 }
 let phacMode='current';
 function phacStatus(value,item){return value<item.min?'low':value>item.max?'high':'ok'}
