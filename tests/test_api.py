@@ -421,8 +421,12 @@ class ApiValidationTests(unittest.TestCase):
         self.assertIn("renderPhacScenarioControls", response.text)
         self.assertIn("PHAC_PRESETS", response.text)
         self.assertIn("resetPhacScenario", response.text)
+        self.assertIn("phac-control-toolbar", response.text)
+        self.assertIn("phacActiveScenario", response.text)
+        self.assertIn("resetPhacScenarioState();Object.assign", response.text)
+        self.assertIn("setPhacScenarioLabel(preset.label)", response.text)
+        self.assertIn("phacScenarioLabel+' · measured soil vs treatment projection", response.text)
         self.assertIn("soilChemistry=phacSoilPenalty", response.text)
-        self.assertIn("Same scenario controls · measured soil vs treatment projection", response.text)
 
 
 if __name__ == "__main__":
