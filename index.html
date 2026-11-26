@@ -120,11 +120,6 @@ button,input,select{font:inherit}
 /* PHAC soil scenario laboratory */
 .phac-hero{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;padding:20px;border-radius:20px;background:linear-gradient(135deg,#173e34,#24674f 62%,#7a6333);color:#fff;margin-bottom:13px}.phac-hero h2{margin:7px 0 8px;font-size:30px}.phac-hero p{margin:0;line-height:1.5;opacity:.88}.phac-source{display:grid;gap:8px}.phac-source div{padding:10px 12px;border:1px solid #ffffff33;border-radius:12px;background:#ffffff12}.phac-source small{display:block;opacity:.7}.phac-source b{display:block;margin-top:3px}.phac-layout{display:grid;grid-template-columns:310px minmax(0,1fr);gap:13px}.phac-controls{display:grid;gap:12px;align-content:start}.phac-controls label{display:grid;gap:6px;font-size:12px;font-weight:850}.phac-mode{display:grid;grid-template-columns:1fr 1fr;gap:7px}.phac-mode button{padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:850;cursor:pointer}.phac-mode button.active{background:var(--accent);border-color:var(--accent);color:#fff}.phac-dose{padding:12px;border-radius:12px;background:#f2f8f4;border:1px solid #cfe1d6}.phac-dose b{display:block;font-size:22px;margin-top:3px}.phac-warning{padding:10px;border-radius:10px;background:#fff6df;border:1px solid #e2c071;color:#785617;font-size:11px;line-height:1.45}.phac-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:11px}.phac-kpi{padding:11px;border:1px solid var(--line);border-radius:12px;background:#f8fbf9}.phac-kpi small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;font-weight:900}.phac-kpi b{display:block;margin-top:3px;font-size:21px}.phac-table-wrap{overflow-x:auto}.phac-table{width:100%;border-collapse:separate;border-spacing:0 7px;min-width:720px}.phac-table th{font-size:10px;color:var(--muted);text-align:left;padding:0 8px}.phac-table td{padding:10px 8px;background:#f7faf8;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:11px}.phac-table td:first-child{border-left:1px solid var(--line);border-radius:10px 0 0 10px;font-weight:900}.phac-table td:last-child{border-right:1px solid var(--line);border-radius:0 10px 10px 0}.soil-bar{height:7px;min-width:105px;border-radius:999px;background:#dfe9e3;overflow:hidden}.soil-bar span{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .35s}.soil-status{display:inline-block;padding:4px 7px;border-radius:999px;font-size:9px;font-weight:900}.soil-status.ok{background:#e3f5e9;color:#21633f}.soil-status.low{background:#e7f0fa;color:#315f87}.soil-status.high{background:#fff0dc;color:#885d19}.soil-delta{font-weight:900;color:var(--accent2)}.phac-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:11px}.phac-action{padding:11px;border:1px solid var(--line);border-radius:11px;background:#fff}.phac-action small{display:block;color:var(--muted)}.phac-action b{display:block;margin:4px 0;font-size:12px}.phac-action span{font-size:10px;color:var(--muted);line-height:1.4}.phac-model-note{margin-top:10px;padding:10px;border-left:4px solid var(--warn);background:#fff9e9;font-size:10px;line-height:1.5;color:#665125}@media(max-width:900px){.phac-hero,.phac-layout{grid-template-columns:1fr}.phac-kpis{grid-template-columns:1fr 1fr}.phac-actions{grid-template-columns:1fr}}
 
-.phac-scenario-bridge{margin:10px 0 12px;padding:12px;border:1px solid #b9d8c8;border-radius:13px;background:linear-gradient(135deg,#f1f8f4,#fff9e9)}
-.phac-scenario-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.phac-scenario-head h4{margin:0}.phac-scenario-head small{color:var(--muted)}
-.phac-scenario-buttons{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0}.phac-scenario-buttons button{padding:9px;border:1px solid #a9cdbb;border-radius:9px;background:#fff;font-weight:850;cursor:pointer}.phac-scenario-buttons button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.phac-scenario-values{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.phac-scenario-values span{padding:7px;background:#ffffffb8;border-radius:8px;font-size:9px;color:var(--muted)}.phac-scenario-values b{display:block;color:var(--ink);font-size:12px;margin-top:2px}
-.phac-scenario-note{margin-top:8px;font-size:9px;line-height:1.4;color:#6d5a2e}@media(max-width:700px){.phac-scenario-buttons,.phac-scenario-values{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -249,6 +244,23 @@ button,input,select{font:inherit}
           <div class="phac-actions"><div class="phac-action"><small>Prescription action</small><b>Dolomitic lime: 1,068 kg</b><span>Targets acidity plus Ca and Mg deficiency.</span></div><div class="phac-action"><small>Remaining deficiency</small><b>Organic matter: 22 g/kg</b><span>The report recommends 4,077 kg mixed livestock compost for the field.</span></div><div class="phac-action"><small>Over-supply control</small><b>P 501 · K 0.77</b><span>Do not assume lime corrects high phosphorus or potassium; reduce related fertilizer inputs.</span></div></div>
           <div class="phac-model-note"><b>Model boundary:</b> Dolomitic lime is modelled only against pH, exchangeable Ca and exchangeable Mg. Organic matter, available phosphorus, exchangeable K and EC remain unchanged. Actual response depends on soil buffering, incorporation depth, moisture, product neutralizing value and time; retest after treatment.</div>
         </div>
+        <div class="card" style="margin-top:13px">
+          <div class="section-head"><div><h3>PHAC soil impact on orchard KPIs</h3><p class="muted">The same six KPI outputs used in Scenario Lab, isolated here for Punchbowl Haven soil treatment analysis.</p></div><span class="badge" id="phacKpiMode">MEASURED BASELINE</span></div>
+          <div class="results">
+            <div class="result"><small>Crop quality</small><b id="phacImpactQuality">79</b></div>
+            <div class="result"><small>Yield index</small><b id="phacImpactYield">92</b></div>
+            <div class="result"><small>Water efficiency</small><b id="phacImpactWater">95%</b></div>
+            <div class="result"><small>Waste risk</small><b id="phacImpactWaste">Medium</b></div>
+            <div class="result"><small>Gross value index</small><b id="phacImpactValue">85</b></div>
+            <div class="result"><small>Confidence</small><b id="phacImpactConfidence">0.76</b></div>
+          </div>
+          <div class="engine-row"><span class="engine-status ready" id="phacImpactEngine">PHAC soil model · measured baseline</span></div>
+          <div class="comparison-panel">
+            <div class="comparison-head"><b>Measured soil vs treatment scenario</b><span id="phacImpactMeta">Baseline: Hyeon-ri 1004 soil test</span></div>
+            <table class="comparison-table"><thead><tr><th>KPI</th><th>Measured soil</th><th id="phacImpactCurrentHead">Current view</th><th>Δ</th></tr></thead><tbody id="phacImpactBody"></tbody></table>
+          </div>
+          <div class="notice"><b>Interpretation:</b> <span id="phacImpactRecommendation">Current acidity and low calcium/magnesium constrain the modeled orchard outcome.</span></div>
+        </div>
       </div>
     </div>
   </section>
@@ -263,12 +275,6 @@ button,input,select{font:inherit}
     <div class="scenario-layout">
       <div class="card control-panel">
         <div style="display:flex;justify-content:space-between;align-items:center"><div><h3>Scenario controls</h3><p class="muted">Adjust field-to-market assumptions.</p></div><button class="primary" id="resetBtn">Reset</button></div>
-        <div class="phac-scenario-bridge">
-          <div class="phac-scenario-head"><div><h4>PHAC soil → KPI comparison</h4><small>Hyeon-ri 1004 · measured 16 June 2026</small></div><span class="badge" id="phacKpiEvidence">NOT APPLIED</span></div>
-          <div class="phac-scenario-buttons"><button id="applyPhacCurrent">1 · Apply measured soil baseline</button><button id="applyPhacLime">2 · Compare after dolomitic lime</button></div>
-          <div class="phac-scenario-values"><span>pH<b id="scenarioSoilPh">—</b></span><span>Exchangeable Ca<b id="scenarioSoilCa">—</b></span><span>Exchangeable Mg<b id="scenarioSoilMg">—</b></span></div>
-          <div class="phac-scenario-note" id="phacKpiNote">Use step 1 to capture the current measured soil as the KPI baseline, then step 2 to display the projected KPI response after 1,068 kg dolomitic lime. Projection is not a measured field result.</div>
-        </div>
         <div class="presetbar"><button data-preset="heat">Heat wave</button><button data-preset="wet">Wet disease period</button><button data-preset="delay">Harvest/logistics delay</button><button data-preset="efficient">Resource-efficient</button><button data-preset="thinning">Flower thinning window</button><button data-preset="lido">LiDO reference site</button></div>
         <div id="controls"></div>
       </div>
@@ -430,6 +436,27 @@ const PHAC_SOIL=[
  {key:'mg',label:'Exchangeable Mg',unit:'cmol+/kg',current:1.1,min:1.5,max:2,effect:.5,decimals:2},
  {key:'ec',label:'Electrical conductivity',unit:'dS/m',current:.46,min:0,max:2,effect:.04,decimals:2}
 ];
+const PHAC_KPI_BASE={quality:84.008,yieldIdx:98.22,waterEff:96,waste:19.242,value:90.5814,conf:.763};
+function phacSoilPenalty(values){
+ const v=Object.fromEntries(values.map(item=>[item.key,item.projected]));
+ return Math.max(0,6-v.ph)*4+Math.max(0,v.ph-6.5)*3+Math.max(0,25-v.om)*.2+Math.min(2,Math.max(0,v.p-300)/150)+Math.min(2,Math.max(0,v.k-.6)*5)+Math.max(0,5-v.ca)+Math.max(0,1.5-v.mg)*2+Math.max(0,v.ec-2)*2;
+}
+function phacKpiResult(values,projected){
+ const penalty=phacSoilPenalty(values),quality=Math.max(35,PHAC_KPI_BASE.quality-penalty*.65),yieldIdx=Math.max(40,PHAC_KPI_BASE.yieldIdx-penalty*.8),waterEff=Math.max(30,PHAC_KPI_BASE.waterEff-penalty*.15);
+ const waste=Math.max(2,100-quality+3.25),value=Math.max(30,quality*.55+yieldIdx*.35+10),conf=Math.max(.42,PHAC_KPI_BASE.conf-(projected?.04:0));
+ return {quality,yieldIdx,waterEff,waste,value,conf};
+}
+const PHAC_MEASURED_VALUES=PHAC_SOIL.map(item=>({...item,projected:item.current}));
+const PHAC_MEASURED_KPIS=phacKpiResult(PHAC_MEASURED_VALUES,false);
+function formatPhacImpactValue(key,value){if(key==='conf')return value.toFixed(2);if(key==='waterEff')return Math.round(value)+'%';return Math.round(value)}
+function renderPhacImpact(values){
+ const projected=phacMode==='lime',current=phacKpiResult(values,projected),baseline=PHAC_MEASURED_KPIS,risk=current.waste<18?'Low':current.waste<35?'Medium':'High';
+ phacImpactQuality.textContent=Math.round(current.quality);phacImpactYield.textContent=Math.round(current.yieldIdx);phacImpactWater.textContent=Math.round(current.waterEff)+'%';phacImpactWaste.textContent=risk;phacImpactValue.textContent=Math.round(current.value);phacImpactConfidence.textContent=current.conf.toFixed(2);
+ phacKpiMode.textContent=projected?'PROJECTED AFTER LIME':'MEASURED BASELINE';phacImpactCurrentHead.textContent=projected?'After lime':'Current soil';phacImpactEngine.textContent=projected?'PHAC soil model · projected, not measured':'PHAC soil model · measured baseline';phacImpactMeta.textContent=projected?'Baseline: measured soil · comparison: treatment projection':'Baseline: Hyeon-ri 1004 soil test';
+ const metrics=[{key:'quality',label:'Quality',lower:false},{key:'yieldIdx',label:'Yield',lower:false},{key:'waterEff',label:'Water efficiency',lower:false},{key:'waste',label:'Waste score',lower:true},{key:'value',label:'Value',lower:false},{key:'conf',label:'Confidence',lower:false}];
+ phacImpactBody.innerHTML=metrics.map(metric=>{const delta=current[metric.key]-baseline[metric.key],impact=delta*(metric.lower?-1:1),cls=Math.abs(delta)<.005?'delta-neutral':impact>0?'delta-positive':'delta-negative',formatted=metric.key==='conf'?delta.toFixed(2):(delta>=0?'+':'')+Math.round(delta);return '<tr><td>'+metric.label+'</td><td>'+formatPhacImpactValue(metric.key,baseline[metric.key])+'</td><td>'+formatPhacImpactValue(metric.key,current[metric.key])+'</td><td class="'+cls+'">'+formatted+'</td></tr>'}).join('');
+ phacImpactRecommendation.textContent=projected?'The model improves quality, yield, water efficiency and value while reducing waste; confidence is lower because treatment values are projected and require field retesting.':'Current acidity and low calcium/magnesium constrain the modeled orchard outcome.';
+}
 let phacMode='current';
 function phacStatus(value,item){return value<item.min?'low':value>item.max?'high':'ok'}
 function phacFitness(value,item){if(value>=item.min&&value<=item.max)return 100;const span=Math.max(.01,item.max-item.min),distance=value<item.min?item.min-value:value-item.max;return Math.max(0,100-distance/span*50)}
@@ -441,6 +468,7 @@ function renderPhacSoil(){
  document.getElementById('phacScenarioTitle').textContent=phacMode==='lime'?'Modelled soil after dolomitic lime':'Current measured soil';document.getElementById('phacScenarioSub').textContent=phacMode==='lime'?'Planning estimate at '+rate+'% application after '+months+' months.':'Laboratory baseline from the official orchard fertilizer prescription.';document.getElementById('phacScenarioBadge').textContent=phacMode==='lime'?'PROJECTED · NOT MEASURED':'MEASURED';document.getElementById('phacProjectedHead').textContent=phacMode==='lime'?'Projected':'Current';
  document.getElementById('phacWarning').innerHTML=rate>100?'<b>Over-application caution:</b> This exceeds the prescription rate. Apply only with agronomic confirmation and retest before additional material.':'<b>Important:</b> Projected values are planning estimates, not measured outcomes. Incorporate evenly and confirm with a follow-up soil test before additional liming.';
  document.getElementById('phacSoilRows').innerHTML=values.map(item=>{const status=phacStatus(item.projected,item),range=Math.max(.01,item.max-item.min),plotMin=Math.min(0,item.min-range),plotMax=item.max+range,position=Math.max(2,Math.min(100,(item.projected-plotMin)/(plotMax-plotMin)*100)),delta=item.projected-item.current,fmt=v=>v.toFixed(item.decimals);return '<tr><td>'+item.label+'<br><small>'+item.unit+'</small></td><td>'+fmt(item.current)+'</td><td><b>'+fmt(item.projected)+'</b></td><td>'+fmt(item.min)+'-'+fmt(item.max)+'</td><td><div class="soil-bar"><span style="width:'+position+'%"></span></div></td><td><span class="soil-status '+status+'">'+(status==='ok'?'IN RANGE':status.toUpperCase())+'</span></td><td class="soil-delta">'+(delta===0?'—':(delta>0?'+':'')+fmt(delta))+'</td></tr>'}).join('');
+ renderPhacImpact(values);
 }
 document.querySelectorAll('[data-phac-mode]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-phac-mode]').forEach(x=>x.classList.remove('active'));button.classList.add('active');phacMode=button.dataset.phacMode;renderPhacSoil()}));
 document.getElementById('phacRate').addEventListener('input',renderPhacSoil);document.getElementById('phacMonths').addEventListener('input',renderPhacSoil);renderPhacSoil();
@@ -1272,7 +1300,6 @@ const groups=[
 ];
 const state={};
 groups.forEach(g=>g.items.forEach(i=>state[i[0]]=i[5]));
-Object.assign(state,{soilPh:6.25,organicMatter:30,availablePhosphorus:250,exchangeableK:.45,exchangeableCa:5.5,exchangeableMg:1.75,soilEvidence:'generic'});
 function renderControls(){
  controls.innerHTML=groups.map(g=>`<div class="control-group"><h4>${g.name}<span class="badge">${g.items.length} parameters</span></h4>${g.items.map(i=>`<div class="control-row"><div><label for="${i[0]}">${i[1]}</label><input id="${i[0]}" type="range" min="${i[3]}" max="${i[4]}" step="${i[4]-i[3]>20?1:.1}" value="${state[i[0]]}"></div><output id="${i[0]}Out">${state[i[0]]} ${i[2]}</output></div>`).join('')}</div>`).join('');
  groups.forEach(g=>g.items.forEach(i=>document.getElementById(i[0]).addEventListener('input',e=>{state[i[0]]=+e.target.value;document.getElementById(i[0]+'Out').textContent=state[i[0]]+' '+i[2];updateScenario()})));
@@ -1298,15 +1325,14 @@ function calc(){
  const climate=Math.abs(state.temperature)*1.3+Math.max(0,state.vpd-1.2)*7+Math.max(0,state.humidity-80)*.25;
  const water=Math.max(0,28-state.soil)*1.1+Math.max(0,18-state.irrigation)*.7;
  const bio=state.stress*.18+state.disease*.22+Math.abs(state.cropLoad-100)*.08;
- const soilChemistry=Math.max(0,6-state.soilPh)*4+Math.max(0,state.soilPh-6.5)*3+Math.max(0,25-state.organicMatter)*.2+Math.min(2,Math.max(0,state.availablePhosphorus-300)/150)+Math.min(2,Math.max(0,state.exchangeableK-.6)*5)+Math.max(0,5-state.exchangeableCa)+Math.max(0,1.5-state.exchangeableMg)*2+Math.max(0,state.ec-2)*2;
  const ops=state.harvestDelay*.18+state.cooling*.35+(100-state.handling)*.22+(100-state.cold)*.25;
  const chain=state.lead*.28+state.shelf*.35+state.claims*.08;
- const quality=Math.max(35,96-climate-water-bio-soilChemistry*.65-ops-chain*.35+state.pack*.04);
- const yieldIdx=Math.max(40,104-climate*.45-water*.7-bio*.5-soilChemistry*.8-Math.max(0,100-state.labor)*.2);
- const waterEff=Math.max(30,96-Math.abs(state.irrigation-18)*1.2-Math.max(0,state.vpd-1.5)*5+(state.drainage-75)*.08-soilChemistry*.15);
+ const quality=Math.max(35,96-climate-water-bio-ops-chain*.35+state.pack*.04);
+ const yieldIdx=Math.max(40,104-climate*.45-water*.7-bio*.5-Math.max(0,100-state.labor)*.2);
+ const waterEff=Math.max(30,96-Math.abs(state.irrigation-18)*1.2-Math.max(0,state.vpd-1.5)*5+(state.drainage-75)*.08);
  const waste=Math.max(2,100-quality+state.cooling*.25+state.lead*.25);
  const value=Math.max(30,(quality*.55+yieldIdx*.35+state.price*.1)-Math.max(0,state.energy-100)*.08);
- const conf=Math.max(.42,Math.min(.94,.82-(state.disease+state.stress)*.0015-Math.abs(state.temperature)*.006-(state.soilEvidence==='projected'?.04:0)));
+ const conf=Math.max(.42,Math.min(.94,.82-(state.disease+state.stress)*.0015-Math.abs(state.temperature)*.006));
  return {quality,yieldIdx,waterEff,waste,value,conf}
 }
 const engineStatusEl=document.getElementById('engineStatus');
@@ -1395,26 +1421,6 @@ function updateScenario(){
  scenarioRequestTimer=setTimeout(evaluateScenarioWithPython,120);
 }
 setBaselineBtnEl.addEventListener('click',function(){setBaseline(latestScenarioResult||calc(),'Baseline updated from current scenario')});
-let phacBaselineCaptured=false;
-const PHAC_KPI_SOILS={
- current:{soilPh:5.4,organicMatter:22,availablePhosphorus:501,exchangeableK:.77,exchangeableCa:2.6,exchangeableMg:1.1,ec:.46,soilEvidence:'measured'},
- lime:{soilPh:6.1,organicMatter:22,availablePhosphorus:501,exchangeableK:.77,exchangeableCa:5.0,exchangeableMg:1.6,ec:.50,soilEvidence:'projected'}
-};
-function setPhacScenarioVisual(mode){
- const v=PHAC_KPI_SOILS[mode];scenarioSoilPh.textContent=v.soilPh.toFixed(2);scenarioSoilCa.textContent=v.exchangeableCa.toFixed(2)+' cmol+/kg';scenarioSoilMg.textContent=v.exchangeableMg.toFixed(2)+' cmol+/kg';
- phacKpiEvidence.textContent=mode==='current'?'MEASURED BASELINE':'PROJECTED AFTER LIME';
- document.querySelectorAll('.phac-scenario-buttons button').forEach(x=>x.classList.remove('active'));document.getElementById(mode==='current'?'applyPhacCurrent':'applyPhacLime').classList.add('active');
- phacKpiNote.textContent=mode==='current'?'Measured soil is now the KPI baseline: pH 5.4, Ca 2.6 and Mg 1.1.':'Projected response at 100% of the 1,068 kg prescription after 6 months. Organic matter, P and K remain unchanged; verify by retesting.';
-}
-function applyPhacSoil(mode){
- Object.assign(state,PHAC_KPI_SOILS[mode]);setPhacScenarioVisual(mode);
- const result=calc();latestScenarioResult=result;applyScenarioResult(result);
- if(mode==='current'){setBaseline(result,'PHAC measured soil · Hyeon-ri 1004');phacBaselineCaptured=true;}
- else if(!phacBaselineCaptured){Object.assign(state,PHAC_KPI_SOILS.current);setBaseline(calc(),'PHAC measured soil · Hyeon-ri 1004');phacBaselineCaptured=true;Object.assign(state,PHAC_KPI_SOILS.lime);}
- renderComparison(result);updateScenario();
-}
-document.getElementById('applyPhacCurrent').addEventListener('click',()=>applyPhacSoil('current'));
-document.getElementById('applyPhacLime').addEventListener('click',()=>applyPhacSoil('lime'));
 
 function recommendationFor(role,x){
  if(role==='grower')return x.waste>35?'Reduce harvest and cooling delays; prioritize the highest-risk block.':x.waterEff<70?'Adjust irrigation using soil moisture and VPD before the next cycle.':'Maintain current management and monitor maturity and stress.';
@@ -1488,7 +1494,7 @@ function renderLifecycle(x){
 updateScenario();
 
 document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.preset;if(p==='heat'){Object.assign(state,{temperature:7,vpd:3.2,soil:18,stress:62,irrigation:12})}if(p==='wet'){Object.assign(state,{rain:85,humidity:94,disease:68,solar:55,handling:78})}if(p==='delay'){Object.assign(state,{harvestDelay:36,cooling:26,cold:62,lead:18,shelf:10})}if(p==='efficient'){Object.assign(state,{irrigation:17,waterCost:85,energy:78,carbon:76,biodiversity:82,wasteTarget:35})}if(p==='thinning'){Object.assign(state,{temperature:4,vpd:0.8,humidity:70,solar:105,phenology:16,canopy:40,cropLoad:130,stress:10,disease:8,pollenTube:62})}if(p==='lido'){Object.assign(state,{canopy:58,disease:12,spray:92,stress:18,labor:88,cooling:4,harvestDelay:2,cold:96,handling:90})}renderControls();updateScenario();if(p==='thinning'){stakeholderName.textContent='Flower thinning decision:';recommendation.textContent='Warm bloom weather ('+Math.round(state.temperature)+'°C above normal) is speeding up pollen tube growth — tubes are already an estimated '+Math.round(state.pollenTube)+'% of the way to the ovary. Crop load is running high ('+Math.round(state.cropLoad)+'% of target). The classical thinning window closes once fertilization completes, so a chemical or mechanical thinning decision is time-sensitive here.'}if(p==='lido'){stakeholderName.textContent='LiDO reference site:';recommendation.textContent="Modeled on Laimburg's own LiDO field labs — a 0.65 ha Rosy Glow Pink Lady® apple orchard on a flat, multi-axis Guyot canopy built for cameras and robots, and a 0.4 ha Chardonnay vineyard on slopes up to 70%. Both sites already run fixed precision-spraying, automated irrigation, fibre-optic connectivity and a central InfluxDB data platform — the well-instrumented, low-uncertainty baseline this scenario reflects."}}));
-resetBtn.addEventListener('click',()=>{groups.forEach(g=>g.items.forEach(i=>state[i[0]]=i[5]));Object.assign(state,{soilPh:6.25,organicMatter:30,availablePhosphorus:250,exchangeableK:.45,exchangeableCa:5.5,exchangeableMg:1.75,soilEvidence:'generic'});phacBaselineCaptured=false;phacKpiEvidence.textContent='NOT APPLIED';scenarioSoilPh.textContent=scenarioSoilCa.textContent=scenarioSoilMg.textContent='—';document.querySelectorAll('.phac-scenario-buttons button').forEach(x=>x.classList.remove('active'));renderControls();updateScenario()});
+resetBtn.addEventListener('click',()=>{groups.forEach(g=>g.items.forEach(i=>state[i[0]]=i[5]));renderControls();updateScenario()});
 globalCrop.addEventListener('change',()=>{buildMatrix();updateScenario()});globalRole.addEventListener('change',()=>{renderPersonas();updateScenario()});
 
 chatSend.addEventListener('click',()=>{const q=chatInput.value.trim();if(!q)return;const u=document.createElement('div');u.className='msg user';u.textContent=q;chat.appendChild(u);chatInput.value='';const x=latestScenarioResult||calc();setTimeout(()=>{const a=document.createElement('div');a.className='msg ai';a.innerHTML=`<b>${copilotObjective.value} · ${copilotStyle.value}</b><br>${answerQuery(q,globalRole.value,x)}<br><small>Risk tolerance: ${copilotRisk.value}.</small>`;chat.appendChild(a);chat.scrollTop=chat.scrollHeight},220)});
