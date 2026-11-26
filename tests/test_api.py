@@ -411,6 +411,19 @@ class ApiValidationTests(unittest.TestCase):
         self.assertIn("Adjust field-to-market assumptions.", response.text)
         self.assertIn("Set current as baseline", response.text)
 
+    def test_phac_soil_lab_has_independent_linked_scenario_controls(self) -> None:
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('id="phacScenarioControls"', response.text)
+        self.assertIn("PHAC_CONTROL_GROUPS", response.text)
+        self.assertIn("phacScenarioState", response.text)
+        self.assertIn("renderPhacScenarioControls", response.text)
+        self.assertIn("PHAC_PRESETS", response.text)
+        self.assertIn("resetPhacScenario", response.text)
+        self.assertIn("soilChemistry=phacSoilPenalty", response.text)
+        self.assertIn("Same scenario controls · measured soil vs treatment projection", response.text)
+
 
 if __name__ == "__main__":
     unittest.main()
