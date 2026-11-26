@@ -398,7 +398,7 @@ class ApiValidationTests(unittest.TestCase):
         self.assertIn("phacImpactValue", response.text)
         self.assertIn("phacImpactConfidence", response.text)
         self.assertIn("Measured soil vs treatment scenario", response.text)
-        self.assertIn("PHAC_MEASURED_KPIS", response.text)
+        self.assertIn("PHAC_MEASURED_VALUES", response.text)
         self.assertIn("PROJECTED AFTER LIME", response.text)
 
     def test_original_scenario_lab_is_not_replaced_by_phac_controls(self) -> None:
