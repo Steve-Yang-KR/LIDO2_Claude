@@ -34,6 +34,13 @@ class ScenarioInput(ApiModel):
     soil: float = Field(28, ge=10, le=50)
     irrigation: float = Field(18, ge=0, le=40)
     ec: float = Field(0.8, ge=0, le=3)
+    soil_ph: float = Field(6.25, ge=3.5, le=9)
+    organic_matter: float = Field(30, ge=0, le=100)
+    available_phosphorus: float = Field(250, ge=0, le=1500)
+    exchangeable_k: float = Field(0.45, ge=0, le=5)
+    exchangeable_ca: float = Field(5.5, ge=0, le=30)
+    exchangeable_mg: float = Field(1.75, ge=0, le=15)
+    soil_evidence: Literal["generic", "measured", "projected"] = "generic"
     drainage: float = Field(75, ge=0, le=100)
     water_cost: float = Field(100, ge=50, le=150)
 
@@ -92,6 +99,16 @@ def evaluate_scenario(scenario: ScenarioInput) -> ScenarioResult:
         + scenario.disease * 0.22
         + abs(scenario.crop_load - 100) * 0.08
     )
+    soil_chemistry = (
+        max(0, 6.0 - scenario.soil_ph) * 4
+        + max(0, scenario.soil_ph - 6.5) * 3
+        + max(0, 25 - scenario.organic_matter) * 0.2
+        + min(2.0, max(0, scenario.available_phosphorus - 300) / 150)
+        + min(2.0, max(0, scenario.exchangeable_k - 0.6) * 5)
+        + max(0, 5.0 - scenario.exchangeable_ca)
+        + max(0, 1.5 - scenario.exchangeable_mg) * 2
+        + max(0, scenario.ec - 2.0) * 2
+    )
     operations = (
         scenario.harvest_delay * 0.18
         + scenario.cooling * 0.35
@@ -102,7 +119,7 @@ def evaluate_scenario(scenario: ScenarioInput) -> ScenarioResult:
 
     quality = max(
         35,
-        96 - climate - water - biology - operations - chain * 0.35 + scenario.pack * 0.04,
+        96 - climate - water - biology - soil_chemistry * 0.65 - operations - chain * 0.35 + scenario.pack * 0.04,
     )
     yield_index = max(
         40,
@@ -110,6 +127,7 @@ def evaluate_scenario(scenario: ScenarioInput) -> ScenarioResult:
         - climate * 0.45
         - water * 0.7
         - biology * 0.5
+        - soil_chemistry * 0.8
         - max(0, 100 - scenario.labor) * 0.2,
     )
     water_efficiency = max(
@@ -117,7 +135,8 @@ def evaluate_scenario(scenario: ScenarioInput) -> ScenarioResult:
         96
         - abs(scenario.irrigation - 18) * 1.2
         - max(0, scenario.vpd - 1.5) * 5
-        + (scenario.drainage - 75) * 0.08,
+        + (scenario.drainage - 75) * 0.08
+        - soil_chemistry * 0.15,
     )
     waste_score = max(2, 100 - quality + scenario.cooling * 0.25 + scenario.lead * 0.25)
     value_index = max(
@@ -133,7 +152,8 @@ def evaluate_scenario(scenario: ScenarioInput) -> ScenarioResult:
             0.94,
             0.82
             - (scenario.disease + scenario.stress) * 0.0015
-            - abs(scenario.temperature) * 0.006,
+            - abs(scenario.temperature) * 0.006
+            - (0.04 if scenario.soil_evidence == "projected" else 0),
         ),
     )
 
@@ -141,6 +161,7 @@ def evaluate_scenario(scenario: ScenarioInput) -> ScenarioResult:
         "climate": climate,
         "water": water,
         "plant physiology": biology,
+        "soil chemistry": soil_chemistry,
         "field operations": operations,
         "value chain": chain,
     }
