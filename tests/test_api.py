@@ -436,7 +436,7 @@ class ApiValidationTests(unittest.TestCase):
         self.assertIn("phacActiveScenario", response.text)
         self.assertIn("resetPhacScenarioState();Object.assign", response.text)
         self.assertIn("setPhacScenarioLabel(preset.label)", response.text)
-        self.assertIn("phacScenarioLabel+' · measured soil vs treatment projection", response.text)
+        self.assertIn("phacScenarioLabel+' · standard baseline", response.text)
         self.assertIn("soilChemistry=phacSoilPenalty", response.text)
 
 
