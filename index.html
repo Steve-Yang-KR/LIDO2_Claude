@@ -239,6 +239,15 @@ button,input,select{font:inherit}
           <summary><b>Scenario controls</b><small>Environment → field → market assumptions</small></summary>
           <div class="phac-control-toolbar"><span class="badge" id="phacActiveScenario">Standard baseline</span><button class="primary" id="resetPhacScenario" type="button">Reset</button></div>
           <div class="presetbar" style="margin-top:9px"><button data-phac-preset="heat">Heat wave</button><button data-phac-preset="wet">Wet disease period</button><button data-phac-preset="delay">Harvest/logistics delay</button><button data-phac-preset="efficient">Resource-efficient</button><button data-phac-preset="thinning">Flower thinning window</button></div>
+          <fieldset id="phacWeather"><legend>Haean historical weather</legend>
+<label>Load weather files (.xlsx or .csv)<input id="phacWeatherFiles" type="file" accept=".xlsx,.csv" multiple></label>
+<label>Source<select id="phacWeatherSource" disabled></select></label>
+<label>Date<input id="phacWeatherDate" type="date" disabled></label>
+<div class="presetbar"><button type="button" id="phacWeatherApply" disabled>Apply weather</button><button type="button" id="phacWeatherView" disabled aria-expanded="false">View data / 데이터 보기</button></div>
+<p class="muted" id="phacWeatherStatus" role="status">Files are read in this browser and are not uploaded.</p>
+<div id="phacWeatherData" hidden></div>
+<p class="muted">Temperature and radiation use the selected file’s calendar-month averages as references, not climate normals. The current KPI model uses temperature anomaly, humidity, VPD and soil moisture; rainfall, radiation and wind update controls but do not independently change KPIs.</p>
+</fieldset>
           <div id="phacScenarioControls"></div>
           <p class="muted" style="font-size:9px;margin:8px 0 0">Soil EC is controlled by the measured or projected PHAC soil profile. Other controls are independent from the original Scenario Lab.</p>
         </details>
@@ -469,6 +478,126 @@ function renderPhacScenarioControls(){
  phacScenarioControls.innerHTML=PHAC_CONTROL_GROUPS.map(group=>'<div class="control-group"><h4>'+group.name+'<span class="badge">'+group.items.length+' parameters</span></h4>'+group.items.map(item=>{const disabled=item[0]==='ec'?' disabled':'';return '<div class="control-row"><div><label for="phac-'+item[0]+'">'+item[1]+'</label><input id="phac-'+item[0]+'" type="range" min="'+item[3]+'" max="'+item[4]+'" step="'+(item[4]-item[3]>20?1:.1)+'" value="'+phacScenarioState[item[0]]+'"'+disabled+'></div><output id="phac-'+item[0]+'Out">'+phacScenarioState[item[0]]+' '+item[2]+'</output></div>'}).join('')+'</div>').join('');
  PHAC_CONTROL_GROUPS.forEach(group=>group.items.forEach(item=>{if(item[0]==='ec')return;document.getElementById('phac-'+item[0]).addEventListener('input',event=>{phacScenarioState[item[0]]=+event.target.value;document.getElementById('phac-'+item[0]+'Out').textContent=phacScenarioState[item[0]]+' '+item[2];setPhacScenarioLabel('Custom scenario');document.querySelectorAll('[data-phac-preset]').forEach(x=>x.classList.remove('active'));renderPhacSoil()})}));
 }
+
+function initPhacWeather(){
+ const el=id=>document.getElementById('phacWeather'+id), files=el('Files'),source=el('Source'),date=el('Date'),apply=el('Apply'),view=el('View'),panel=el('Data'),status=el('Status');
+ const datasets=[];
+ const number=value=>value!=null&&String(value).trim()!==''&&Number.isFinite(Number(value))?Number(value):null;
+ const iso=value=>/^\d{4}-\d{2}-\d{2}$/.test(value);
+ const csvRows=text=>text.replace(/^\uFEFF/,'').split(/\r?\n/).filter(Boolean).map(line=>line.split(','));
+ async function readStation(file){
+  // Read the single-sheet RDA export locally; no third-party script or upload.
+  const bytes=await file.arrayBuffer(), z=new DataView(bytes);
+  let end=bytes.byteLength-22;
+  while(end>=Math.max(0,bytes.byteLength-65557)&&z.getUint32(end,true)!==0x06054b50)end--;
+  if(end<Math.max(0,bytes.byteLength-65557))throw Error('Invalid XLSX archive');
+  let p=z.getUint32(end+16,true);
+  const decoder=new TextDecoder();
+  for(let i=0;i<z.getUint16(end+10,true);i++){
+   if(z.getUint32(p,true)!==0x02014b50)break;
+   const n=z.getUint16(p+28,true),name=decoder.decode(new Uint8Array(bytes,p+46,n));
+   if(name==='xl/worksheets/sheet1.xml'){
+    const local=z.getUint32(p+42,true),size=z.getUint32(p+20,true),method=z.getUint16(p+10,true);
+    if(z.getUint32(p+24,true)>5000000||![0,8].includes(method))throw Error('Unsupported XLSX sheet');
+    const start=local+30+z.getUint16(local+26,true)+z.getUint16(local+28,true);
+    const raw=new Blob([new Uint8Array(bytes,start,size)]);
+    const xml=method===0?await raw.text():await new Response(raw.stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+    const doc=new DOMParser().parseFromString(xml,'application/xml');
+    return Array.from(doc.getElementsByTagName('row'),row=>{
+     const cells=[];
+     for(const c of row.children){
+      const column=c.getAttribute('r')?.match(/^([A-M])\d+$/)?.[1];
+      if(column)cells[column.charCodeAt(0)-65]=c.querySelector('t,v')?.textContent??'';
+     }
+     return cells;
+    });
+   }
+   p+=46+n+z.getUint16(p+30,true)+z.getUint16(p+32,true);
+  }
+  throw Error('RDA worksheet not found');
+ }
+ async function dataset(file){
+  const station=/\.xlsx$/i.test(file.name);
+  const raw=station?await readStation(file):csvRows(await file.text());
+  const header=station?raw.find(r=>r[2]==='날짜'):raw.find(r=>r[0]==='time');
+  if(!header)throw Error('Unsupported weather export');
+  const rows=new Map();
+  for(const row of raw){
+   const day=row[station?2:0];if(!iso(day))continue;
+   const get=key=>number(row[header.findIndex(h=>h?.split(' (')[0]===key)]);
+   const sunshine=station?row[11]?.match(/^(\d{1,2}):([0-5]\d)$/):null;
+   const n=(i)=>number(row[i]), scale=(x,f)=>x===null?null:x*f;
+   rows.set(day,{raw:row, t:station?n(3):get('temperature_2m_mean'),rain:station?n(9):get('rain_sum'),humidity:station?n(6):get('relative_humidity_2m_mean'),vpd:station?null:get('vapour_pressure_deficit_max'),solar:station?n(10):get('shortwave_radiation_sum'),wind:station?n(8):scale(get('wind_speed_10m_mean'),1/3.6),soil:station?n(12):scale(get('soil_moisture_0_to_7cm_mean'),100),sun:station?(sunshine?+sunshine[1]+sunshine[2]/60:null):scale(get('sunshine_duration'),1/3600)});
+  }
+  if(!rows.size)throw Error('No dated weather rows found');
+  const dates=[...rows.keys()].sort();
+  return {header,rows,dates,label:station?(rows.get(dates[0]).raw[1]+' · station observations'):'Open-Meteo · gridded estimates',station};
+ }
+ function selection(){return datasets[Number(source.value)]}
+ function refresh(){
+  const s=selection(),r=s?.rows.get(date.value);
+  apply.disabled=view.disabled=!r;
+  panel.replaceChildren();
+  if(!r){status.textContent='No record for this date in the selected source.';return}
+  status.textContent=s.label+' · '+s.dates[0]+' to '+s.dates.at(-1)+' · '+s.dates.length+' daily records';
+  const list=document.createElement('dl');
+  s.header.forEach((name,i)=>{
+   const term=document.createElement('dt'),value=document.createElement('dd');
+   term.textContent=name;value.textContent=r.raw[i]?.trim()||'—';list.append(term,value);
+  });
+  if(r.sun!==null){
+   const term=document.createElement('dt'),value=document.createElement('dd');
+   term.textContent='Sunshine (hours)';value.textContent=r.sun.toFixed(2);list.append(term,value);
+  }
+  panel.append(list);
+ }
+ function choose(){
+  const s=selection();date.min=s.dates[0];date.max=s.dates.at(-1);
+  if(!s.rows.has(date.value))date.value=date.max;
+  refresh();
+ }
+ files.addEventListener('change',async()=>{
+  files.disabled=true;
+  const errors=[];
+  try{
+   for(const file of files.files){
+    try{
+     if(file.size>5000000)throw Error('File exceeds 5 MB');
+     const s=await dataset(file);
+     source.add(new Option(s.label+' · '+file.name,String(datasets.length)));datasets.push(s);
+    }catch(e){errors.push(file.name+': '+e.message)}
+   }
+   if(datasets.length){source.disabled=date.disabled=false;choose()}
+   if(errors.length)status.textContent=errors.join(' / ');
+  }finally{files.value='';files.disabled=false}
+ });
+ source.addEventListener('change',choose);date.addEventListener('change',refresh);
+ view.addEventListener('click',()=>{panel.hidden=!panel.hidden;view.setAttribute('aria-expanded',String(!panel.hidden))});
+ apply.addEventListener('click',()=>{
+  const s=selection(),r=s?.rows.get(date.value);if(!r)return;
+  const month=date.value.slice(5,7);
+  const reference=key=>{
+   const values=[...s.rows].filter(([day])=>day.slice(5,7)===month).map(([,row])=>row[key]).filter(Number.isFinite);
+   return values.length?values.reduce((a,b)=>a+b,0)/values.length:null;
+  };
+  const t=reference('t'),solar=reference('solar');
+  const inputs={temperature:r.t!==null&&t!==null?r.t-t:null,rain:r.rain,humidity:r.humidity,vpd:r.vpd,solar:r.solar!==null&&solar>0?100*r.solar/solar:null,wind:r.wind,soil:r.soil};
+  const limited=[],missing=[];
+  for(const [key,value] of Object.entries(inputs)){
+   if(value===null){missing.push(key);continue}
+   const item=PHAC_CONTROL_GROUPS.flatMap(g=>g.items).find(i=>i[0]===key);
+   const bounded=Math.min(item[4],Math.max(item[3],value)),step=item[4]-item[3]>20?1:.1;
+   if(bounded!==value)limited.push(key);
+   phacScenarioState[key]=Number((Math.round(bounded/step)*step).toFixed(1));
+  }
+  setPhacScenarioLabel(s.label+' · '+date.value);
+  document.querySelectorAll('[data-phac-preset]').forEach(x=>x.classList.remove('active'));
+  renderPhacScenarioControls();renderPhacSoil();
+  status.textContent='Applied '+s.label+' · '+date.value+(missing.length?' · unchanged (missing): '+missing.join(', '):'')+(limited.length?' · limited to control range: '+limited.join(', '):'');
+ });
+}
+initPhacWeather();
+
 function phacSoilPenalty(values){
  const v=Object.fromEntries(values.map(item=>[item.key,item.projected]));
  return Math.max(0,6-v.ph)*4+Math.max(0,v.ph-6.5)*3+Math.max(0,25-v.om)*.2+Math.min(2,Math.max(0,v.p-300)/150)+Math.min(2,Math.max(0,v.k-.6)*5)+Math.max(0,5-v.ca)+Math.max(0,1.5-v.mg)*2+Math.max(0,v.ec-2)*2;
