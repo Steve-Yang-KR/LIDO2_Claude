@@ -408,9 +408,22 @@ class ApiValidationTests(unittest.TestCase):
         self.assertIn("Treatment Δ", response.text)
         self.assertIn("PHAC_MEASURED_VALUES", response.text)
         self.assertIn("PHAC_NEUTRAL_SOIL", response.text)
-        self.assertIn("soilDelta=measured", response.text)
-        self.assertIn("treatmentDelta=current", response.text)
+        self.assertIn("soilDelta=neutral?null:measured", response.text)
+        self.assertIn("treatmentDelta=projected?current", response.text)
         self.assertIn("PROJECTED AFTER LIME", response.text)
+
+    def test_phac_soil_lab_has_scenario_controls_only_mode(self) -> None:
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('data-phac-mode="neutral"', response.text)
+        self.assertIn("Scenario controls only", response.text)
+        self.assertIn("SCENARIO CONTROLS ONLY", response.text)
+        self.assertIn("SOIL DATA NOT APPLIED", response.text)
+        self.assertIn("neutral?scenarioBaseline", response.text)
+        self.assertIn("neutral?PHAC_SCENARIO_BASE_VALUES", response.text)
+        self.assertIn("soilDelta=neutral?null:measured", response.text)
+        self.assertIn("No Punchbowl soil-test or lime-treatment values", response.text)
 
     def test_original_scenario_lab_is_not_replaced_by_phac_controls(self) -> None:
         response = self.client.get("/")
