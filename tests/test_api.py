@@ -386,5 +386,21 @@ class ApiValidationTests(unittest.TestCase):
         self.assertIn("Dolomitic lime is modelled only against pH", response.text)
 
 
+    def test_phac_soil_values_feed_scenario_kpi_comparison(self) -> None:
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("PHAC soil → KPI comparison", response.text)
+        self.assertIn("applyPhacCurrent", response.text)
+        self.assertIn("applyPhacLime", response.text)
+        self.assertIn("PHAC_KPI_SOILS", response.text)
+        self.assertIn("soilPh:5.4", response.text)
+        self.assertIn("exchangeableCa:2.6", response.text)
+        self.assertIn("soilPh:6.1", response.text)
+        self.assertIn("exchangeableCa:5.0", response.text)
+        self.assertIn("soilChemistry", response.text)
+        self.assertIn("PROJECTED AFTER LIME", response.text)
+
+
 if __name__ == "__main__":
     unittest.main()
