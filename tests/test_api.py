@@ -368,5 +368,23 @@ class ApiValidationTests(unittest.TestCase):
         )
 
 
+    def test_phac_soil_scenario_lab_is_served(self) -> None:
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('data-view="phac"', response.text)
+        self.assertIn('id="phac"', response.text)
+        self.assertIn("Punchbowl Haven Soil Scenario Lab", response.text)
+        self.assertIn("Hyeon-ri 1004", response.text)
+        self.assertIn("PHAC_SOIL", response.text)
+        self.assertIn("current:5.4", response.text)
+        self.assertIn("current:501", response.text)
+        self.assertIn("current:2.6", response.text)
+        self.assertIn("current:1.1", response.text)
+        self.assertIn("1068*rate/100", response.text)
+        self.assertIn("PROJECTED · NOT MEASURED", response.text)
+        self.assertIn("Dolomitic lime is modelled only against pH", response.text)
+
+
 if __name__ == "__main__":
     unittest.main()
