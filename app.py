@@ -31,7 +31,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://steve-yang-kr.github.io",
-        "https://lido2.onrender.com",
+        "https://lido2-api.onrender.com",
     ],
     allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],

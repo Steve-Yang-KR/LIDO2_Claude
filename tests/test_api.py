@@ -349,7 +349,7 @@ class ApiValidationTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("location.hostname.endsWith('.github.io')", response.text)
-        self.assertIn("https://lido2.onrender.com", response.text)
+        self.assertIn("https://lido2-api.onrender.com", response.text)
         self.assertIn("function apiUrl(path)", response.text)
 
     def test_render_api_allows_github_pages_origin(self) -> None:
