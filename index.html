@@ -120,6 +120,18 @@ button,input,select{font:inherit}
 /* PHAC soil scenario laboratory */
 .phac-hero{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;padding:20px;border-radius:20px;background:linear-gradient(135deg,#173e34,#24674f 62%,#7a6333);color:#fff;margin-bottom:13px}.phac-hero h2{margin:7px 0 8px;font-size:30px}.phac-hero p{margin:0;line-height:1.5;opacity:.88}.phac-source{display:grid;gap:8px}.phac-source div{padding:10px 12px;border:1px solid #ffffff33;border-radius:12px;background:#ffffff12}.phac-source small{display:block;opacity:.7}.phac-source b{display:block;margin-top:3px}.phac-layout{display:grid;grid-template-columns:310px minmax(0,1fr);gap:13px}.phac-controls{display:grid;gap:12px;align-content:start}.phac-controls label{display:grid;gap:6px;font-size:12px;font-weight:850}.phac-mode{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.phac-mode button{padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:850;cursor:pointer}.phac-mode button.active{background:var(--accent);border-color:var(--accent);color:#fff}.phac-dose{padding:12px;border-radius:12px;background:#f2f8f4;border:1px solid #cfe1d6}.phac-dose b{display:block;font-size:22px;margin-top:3px}.phac-warning{padding:10px;border-radius:10px;background:#fff6df;border:1px solid #e2c071;color:#785617;font-size:11px;line-height:1.45}.phac-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:11px}.phac-kpi{padding:11px;border:1px solid var(--line);border-radius:12px;background:#f8fbf9}.phac-kpi small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;font-weight:900}.phac-kpi b{display:block;margin-top:3px;font-size:21px}.phac-table-wrap{overflow-x:auto}.phac-table{width:100%;border-collapse:separate;border-spacing:0 7px;min-width:720px}.phac-table th{font-size:10px;color:var(--muted);text-align:left;padding:0 8px}.phac-table td{padding:10px 8px;background:#f7faf8;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:11px}.phac-table td:first-child{border-left:1px solid var(--line);border-radius:10px 0 0 10px;font-weight:900}.phac-table td:last-child{border-right:1px solid var(--line);border-radius:0 10px 10px 0}.soil-bar{height:7px;min-width:105px;border-radius:999px;background:#dfe9e3;overflow:hidden}.soil-bar span{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .35s}.soil-status{display:inline-block;padding:4px 7px;border-radius:999px;font-size:9px;font-weight:900}.soil-status.ok{background:#e3f5e9;color:#21633f}.soil-status.low{background:#e7f0fa;color:#315f87}.soil-status.high{background:#fff0dc;color:#885d19}.soil-delta{font-weight:900;color:var(--accent2)}.phac-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:11px}.phac-action{padding:11px;border:1px solid var(--line);border-radius:11px;background:#fff}.phac-action small{display:block;color:var(--muted)}.phac-action b{display:block;margin:4px 0;font-size:12px}.phac-action span{font-size:10px;color:var(--muted);line-height:1.4}.phac-model-note{margin-top:10px;padding:10px;border-left:4px solid var(--warn);background:#fff9e9;font-size:10px;line-height:1.5;color:#665125}.phac-scenario-control-box{border-top:1px solid var(--line);padding-top:10px}.phac-scenario-control-box summary{cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center}.phac-scenario-control-box summary small{color:var(--muted);font-size:9px}.phac-scenario-control-box #phacScenarioControls{max-height:640px;overflow:auto;padding-right:5px;margin-top:8px}.phac-scenario-control-box .control-group{background:#fbfdfb}.phac-control-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:9px;padding:8px;border:1px solid var(--line);border-radius:10px;background:#f6faf7}.phac-control-toolbar .primary{padding:7px 13px;flex:0 0 auto}.phac-scenario-control-box .presetbar button.active{background:var(--accent);border-color:var(--accent);color:#fff}@media(max-width:900px){.phac-hero,.phac-layout{grid-template-columns:1fr}.phac-kpis{grid-template-columns:1fr 1fr}.phac-actions{grid-template-columns:1fr}}
 
+
+/* Keep PHAC controls and results within their grid tracks. */
+.phac-layout > *, .phac-controls > *, #phacWeather > * {min-width:0}
+#phacWeather {max-width:100%;box-sizing:border-box;margin:0}
+#phacWeather select,#phacWeather input {width:100%;max-width:100%;box-sizing:border-box}
+#phacWeatherData {overflow:auto;max-height:300px}
+#phacWeatherData table {border-collapse:collapse;font-size:11px}
+#phacWeatherData th,#phacWeatherData td {padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line)}
+#phacWeatherStatus {overflow-wrap:anywhere}
+.phac-mode {grid-template-columns:repeat(3,minmax(0,1fr))}
+.phac-mode button {min-width:0;overflow-wrap:anywhere;padding-inline:5px}
+@media(max-width:1100px){.phac-layout{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -242,11 +254,12 @@ button,input,select{font:inherit}
           <fieldset id="phacWeather"><legend>Haean historical weather</legend>
 <label>Load weather files (.xlsx or .csv)<input id="phacWeatherFiles" type="file" accept=".xlsx,.csv" multiple></label>
 <label>Source<select id="phacWeatherSource" disabled></select></label>
-<label>Date<input id="phacWeatherDate" type="date" disabled></label>
+<label>Start date<input id="phacWeatherDate" type="date" disabled></label>
+<label>End date<input id="phacWeatherEnd" type="date" disabled></label>
 <div class="presetbar"><button type="button" id="phacWeatherApply" disabled>Apply weather</button><button type="button" id="phacWeatherView" disabled aria-expanded="false">View data / 데이터 보기</button></div>
 <p class="muted" id="phacWeatherStatus" role="status">Files are read in this browser and are not uploaded.</p>
 <div id="phacWeatherData" hidden></div>
-<p class="muted">Temperature and radiation use the selected file’s calendar-month averages as references, not climate normals. The current KPI model uses temperature anomaly, humidity, VPD and soil moisture; rainfall, radiation and wind update controls but do not independently change KPIs.</p>
+<p class="muted">Apply weather averages available daily inputs over the selected period (rainfall is mm/day). Temperature anomaly and the solar index use the selected file’s calendar-month averages as references, not climate normals. The current KPI model uses temperature anomaly, humidity, VPD and soil moisture; rainfall, radiation and wind update controls but do not independently change KPIs.</p>
 </fieldset>
           <div id="phacScenarioControls"></div>
           <p class="muted" style="font-size:9px;margin:8px 0 0">Soil EC is controlled by the measured or projected PHAC soil profile. Other controls are independent from the original Scenario Lab.</p>
@@ -480,7 +493,7 @@ function renderPhacScenarioControls(){
 }
 
 function initPhacWeather(){
- const el=id=>document.getElementById('phacWeather'+id), files=el('Files'),source=el('Source'),date=el('Date'),apply=el('Apply'),view=el('View'),panel=el('Data'),status=el('Status');
+ const el=id=>document.getElementById('phacWeather'+id), files=el('Files'),source=el('Source'),date=el('Date'),end=el('End'),apply=el('Apply'),view=el('View'),panel=el('Data'),status=el('Status');
  const datasets=[];
  const number=value=>value!=null&&String(value).trim()!==''&&Number.isFinite(Number(value))?Number(value):null;
  const iso=value=>/^\d{4}-\d{2}-\d{2}$/.test(value);
@@ -534,26 +547,35 @@ function initPhacWeather(){
   return {header,rows,dates,label:station?(rows.get(dates[0]).raw[1]+' · station observations'):'Open-Meteo · gridded estimates',station};
  }
  function selection(){return datasets[Number(source.value)]}
+ function selectedDays(s){
+  if(!s||!date.value||!end.value||date.value>end.value)return [];
+  return s.dates.filter(day=>day>=date.value&&day<=end.value);
+ }
  function refresh(){
-  const s=selection(),r=s?.rows.get(date.value);
-  apply.disabled=view.disabled=!r;
+  const s=selection(),days=selectedDays(s);
+  apply.disabled=view.disabled=!days.length;
   panel.replaceChildren();
-  if(!r){status.textContent='No record for this date in the selected source.';return}
-  status.textContent=s.label+' · '+s.dates[0]+' to '+s.dates.at(-1)+' · '+s.dates.length+' daily records';
-  const list=document.createElement('dl');
-  s.header.forEach((name,i)=>{
-   const term=document.createElement('dt'),value=document.createElement('dd');
-   term.textContent=name;value.textContent=r.raw[i]?.trim()||'—';list.append(term,value);
-  });
-  if(r.sun!==null){
-   const term=document.createElement('dt'),value=document.createElement('dd');
-   term.textContent='Sunshine (hours)';value.textContent=r.sun.toFixed(2);list.append(term,value);
+  if(!days.length){status.textContent='Select a valid period with records in this source.';return}
+  const expected=1+(Date.parse(end.value)-Date.parse(date.value))/86400000;
+  status.textContent=s.label+' · '+days.length+' of '+expected+' selected days · source coverage '+s.dates[0]+' to '+s.dates.at(-1);
+  if(panel.hidden)return;
+  const table=document.createElement('table'),head=table.createTHead().insertRow(),body=table.createTBody();
+  s.header.forEach(name=>{const th=document.createElement('th');th.scope='col';th.textContent=name;head.append(th)});
+  const fragment=document.createDocumentFragment();
+  for(const day of days){
+   const row=document.createElement('tr'),raw=s.rows.get(day).raw;
+   s.header.forEach((_,i)=>{row.insertCell().textContent=raw[i]?.trim()||'—'});
+   fragment.append(row);
   }
-  panel.append(list);
+  body.append(fragment);panel.append(table);
  }
  function choose(){
-  const s=selection();date.min=s.dates[0];date.max=s.dates.at(-1);
-  if(!s.rows.has(date.value))date.value=date.max;
+  const s=selection();
+  for(const input of [date,end]){
+   input.min=s.dates[0];input.max=s.dates.at(-1);
+   if(!input.value||input.value<input.min||input.value>input.max)input.value=input.max;
+  }
+  if(date.value>end.value)date.value=end.value;
   refresh();
  }
  files.addEventListener('change',async()=>{
@@ -567,21 +589,27 @@ function initPhacWeather(){
      source.add(new Option(s.label+' · '+file.name,String(datasets.length)));datasets.push(s);
     }catch(e){errors.push(file.name+': '+e.message)}
    }
-   if(datasets.length){source.disabled=date.disabled=false;choose()}
+   if(datasets.length){source.disabled=date.disabled=end.disabled=false;choose()}
    if(errors.length)status.textContent=errors.join(' / ');
   }finally{files.value='';files.disabled=false}
  });
- source.addEventListener('change',choose);date.addEventListener('change',refresh);
- view.addEventListener('click',()=>{panel.hidden=!panel.hidden;view.setAttribute('aria-expanded',String(!panel.hidden))});
+ source.addEventListener('change',choose);date.addEventListener('change',refresh);end.addEventListener('change',refresh);
+ view.addEventListener('click',()=>{panel.hidden=!panel.hidden;view.setAttribute('aria-expanded',String(!panel.hidden));refresh()});
  apply.addEventListener('click',()=>{
-  const s=selection(),r=s?.rows.get(date.value);if(!r)return;
-  const month=date.value.slice(5,7);
-  const reference=key=>{
-   const values=[...s.rows].filter(([day])=>day.slice(5,7)===month).map(([,row])=>row[key]).filter(Number.isFinite);
-   return values.length?values.reduce((a,b)=>a+b,0)/values.length:null;
-  };
-  const t=reference('t'),solar=reference('solar');
-  const inputs={temperature:r.t!==null&&t!==null?r.t-t:null,rain:r.rain,humidity:r.humidity,vpd:r.vpd,solar:r.solar!==null&&solar>0?100*r.solar/solar:null,wind:r.wind,soil:r.soil};
+  const s=selection(),days=selectedDays(s);if(!days.length)return;
+  const mean=values=>{const n=values.filter(Number.isFinite);return n.length?n.reduce((a,b)=>a+b,0)/n.length:null};
+  const references=new Map();
+  for(const day of days){
+   const month=day.slice(5,7);if(references.has(month))continue;
+   const rows=s.dates.filter(d=>d.slice(5,7)===month).map(d=>s.rows.get(d));
+   references.set(month,{t:mean(rows.map(r=>r.t)),solar:mean(rows.map(r=>r.solar))});
+  }
+  const daily=days.map(day=>{
+   const r=s.rows.get(day),ref=references.get(day.slice(5,7));
+   return {temperature:r.t!==null&&ref.t!==null?r.t-ref.t:null,rain:r.rain,humidity:r.humidity,vpd:r.vpd,solar:r.solar!==null&&ref.solar>0?100*r.solar/ref.solar:null,wind:r.wind,soil:r.soil};
+  });
+  const inputs=Object.fromEntries(Object.keys(daily[0]).map(k=>[k,mean(daily.map(row=>row[k]))]));
+  const period=date.value===end.value?date.value:date.value+' to '+end.value;
   const limited=[],missing=[];
   for(const [key,value] of Object.entries(inputs)){
    if(value===null){missing.push(key);continue}
@@ -590,10 +618,10 @@ function initPhacWeather(){
    if(bounded!==value)limited.push(key);
    phacScenarioState[key]=Number((Math.round(bounded/step)*step).toFixed(1));
   }
-  setPhacScenarioLabel(s.label+' · '+date.value);
+  setPhacScenarioLabel(s.label+' · '+period);
   document.querySelectorAll('[data-phac-preset]').forEach(x=>x.classList.remove('active'));
   renderPhacScenarioControls();renderPhacSoil();
-  status.textContent='Applied '+s.label+' · '+date.value+(missing.length?' · unchanged (missing): '+missing.join(', '):'')+(limited.length?' · limited to control range: '+limited.join(', '):'');
+  status.textContent='Applied '+s.label+' · '+period+' · '+days.length+' days'+(missing.length?' · unchanged (missing): '+missing.join(', '):'')+(limited.length?' · limited to control range: '+limited.join(', '):'');
  });
 }
 initPhacWeather();
