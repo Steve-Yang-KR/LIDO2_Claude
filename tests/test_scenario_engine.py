@@ -45,5 +45,40 @@ class ScenarioEngineTests(unittest.TestCase):
             ScenarioInput(temperature=30)
 
 
+    def test_phac_lime_projection_changes_kpis_from_measured_soil(self) -> None:
+        shared = {
+            "organic_matter": 22,
+            "available_phosphorus": 501,
+            "exchangeable_k": 0.77,
+        }
+        measured = evaluate_scenario(
+            ScenarioInput(
+                soil_ph=5.4,
+                exchangeable_ca=2.6,
+                exchangeable_mg=1.1,
+                ec=0.46,
+                soil_evidence="measured",
+                **shared,
+            )
+        )
+        after_lime = evaluate_scenario(
+            ScenarioInput(
+                soil_ph=6.1,
+                exchangeable_ca=5.0,
+                exchangeable_mg=1.6,
+                ec=0.50,
+                soil_evidence="projected",
+                **shared,
+            )
+        )
+
+        self.assertGreater(after_lime.quality, measured.quality)
+        self.assertGreater(after_lime.yield_index, measured.yield_index)
+        self.assertGreater(after_lime.water_efficiency, measured.water_efficiency)
+        self.assertLess(after_lime.waste_score, measured.waste_score)
+        self.assertGreater(after_lime.value_index, measured.value_index)
+        self.assertLess(after_lime.confidence, measured.confidence)
+
+
 if __name__ == "__main__":
     unittest.main()
