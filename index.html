@@ -298,6 +298,14 @@ button,input,select{font:inherit}
             <div class="comparison-head"><b>Measured soil vs treatment scenario</b><span id="phacImpactMeta">Baseline: Hyeon-ri 1004 soil test</span></div>
             <table class="comparison-table"><thead><tr><th>KPI</th><th>Scenario baseline</th><th>Measured soil</th><th id="phacImpactCurrentHead">Current view</th><th>Soil Δ</th><th>Treatment Δ</th></tr></thead><tbody id="phacImpactBody"></tbody></table>
           </div>
+          <div class="notice">
+            <h4>Find best quality and yield</h4>
+            <p>Compare measured soil and the selected lime projection over an irrigation range. All other scenario inputs, including any applied weather, stay fixed. Yield Index is a model score, not kg.</p>
+            <label>Minimum irrigation (mm) <input id="phacOptMin" type="number" min="0" max="40" step="1" value="0"></label>
+            <label>Maximum irrigation (mm) <input id="phacOptMax" type="number" min="0" max="40" step="1" value="40"></label>
+            <button type="button" class="primary" id="phacOptimize">Compare scenarios</button>
+            <div id="phacOptResults" class="table-wrap" style="overflow:auto" aria-live="polite"></div>
+          </div>
           <div class="notice"><b>Interpretation:</b> <span id="phacImpactRecommendation">Current acidity and low calcium/magnesium constrain the modeled orchard outcome.</span></div>
         </div>
       </div>
@@ -630,8 +638,8 @@ function phacSoilPenalty(values){
  const v=Object.fromEntries(values.map(item=>[item.key,item.projected]));
  return Math.max(0,6-v.ph)*4+Math.max(0,v.ph-6.5)*3+Math.max(0,25-v.om)*.2+Math.min(2,Math.max(0,v.p-300)/150)+Math.min(2,Math.max(0,v.k-.6)*5)+Math.max(0,5-v.ca)+Math.max(0,1.5-v.mg)*2+Math.max(0,v.ec-2)*2;
 }
-function phacKpiResult(values,projected){
- const s=phacScenarioState,climate=Math.abs(s.temperature)*1.3+Math.max(0,s.vpd-1.2)*7+Math.max(0,s.humidity-80)*.25,water=Math.max(0,28-s.soil)*1.1+Math.max(0,18-s.irrigation)*.7,bio=s.stress*.18+s.disease*.22+Math.abs(s.cropLoad-100)*.08,soilChemistry=phacSoilPenalty(values),ops=s.harvestDelay*.18+s.cooling*.35+(100-s.handling)*.22+(100-s.cold)*.25,chain=s.lead*.28+s.shelf*.35+s.claims*.08;
+function phacKpiResult(values,projected,s=phacScenarioState){
+ const climate=Math.abs(s.temperature)*1.3+Math.max(0,s.vpd-1.2)*7+Math.max(0,s.humidity-80)*.25,water=Math.max(0,28-s.soil)*1.1+Math.max(0,18-s.irrigation)*.7,bio=s.stress*.18+s.disease*.22+Math.abs(s.cropLoad-100)*.08,soilChemistry=phacSoilPenalty(values),ops=s.harvestDelay*.18+s.cooling*.35+(100-s.handling)*.22+(100-s.cold)*.25,chain=s.lead*.28+s.shelf*.35+s.claims*.08;
  const quality=Math.max(35,96-climate-water-bio-soilChemistry*.65-ops-chain*.35+s.pack*.04),yieldIdx=Math.max(40,104-climate*.45-water*.7-bio*.5-soilChemistry*.8-Math.max(0,100-s.labor)*.2),waterEff=Math.max(30,96-Math.abs(s.irrigation-18)*1.2-Math.max(0,s.vpd-1.5)*5+(s.drainage-75)*.08-soilChemistry*.15);
  const waste=Math.max(2,100-quality+s.cooling*.25+s.lead*.25),value=Math.max(30,quality*.55+yieldIdx*.35+s.price*.1-Math.max(0,s.energy-100)*.08),conf=Math.max(.42,Math.min(.94,.82-(s.disease+s.stress)*.0015-Math.abs(s.temperature)*.006-(projected?.04:0)));
  return {quality,yieldIdx,waterEff,waste,value,conf};
@@ -651,10 +659,35 @@ function renderPhacImpact(values){
  phacImpactBody.innerHTML=metrics.map(metric=>{const soilDelta=neutral?null:measured[metric.key]-scenarioBaseline[metric.key],treatmentDelta=projected?current[metric.key]-measured[metric.key]:null,cell=delta=>delta===null?'<td class="delta-neutral">—</td>':'<td class="'+phacDeltaClass(metric,delta)+'">'+formatPhacDelta(metric.key,delta)+'</td>';return '<tr><td>'+metric.label+'</td><td>'+formatPhacImpactValue(metric.key,scenarioBaseline[metric.key])+'</td><td>'+formatPhacImpactValue(metric.key,measured[metric.key])+'</td><td>'+formatPhacImpactValue(metric.key,current[metric.key])+'</td>'+cell(soilDelta)+cell(treatmentDelta)+'</tr>'}).join('');
  phacImpactRecommendation.textContent=neutral?'Only the Scenario controls are active. No Punchbowl soil-test or lime-treatment values are included in these KPI outputs.':projected?'Scenario baseline matches the original Scenario Lab controls. Soil Δ shows the measured Punchbowl soil effect; Treatment Δ isolates the projected lime response.':'Scenario baseline matches the original Scenario Lab controls. Soil Δ shows the effect of applying the measured Punchbowl soil profile.';
 }
+function phacOptimizeCandidates(min,max,rate,months,state){
+ const lime=PHAC_SOIL.map(item=>({...item,projected:item.current+item.effect*(rate/100*Math.min(1,months/6))}));
+ const candidates=[];
+ for(const [label,profile,projected] of [['Current soil',PHAC_MEASURED_VALUES,false],['After dolomitic lime',lime,true]]){
+  for(let irrigation=min;irrigation<=max;irrigation++){
+   candidates.push({label,irrigation,...phacKpiResult(profile,projected,{...state,irrigation})});
+  }
+ }
+ const best=(key,other)=>candidates.slice().sort((a,b)=>b[key]-a[key]||b[other]-a[other]||a.irrigation-b.irrigation)[0];
+ return {quality:best('quality','yieldIdx'),yield:best('yieldIdx','quality'),count:candidates.length,baseline:phacKpiResult(PHAC_MEASURED_VALUES,false,state)};
+}
+document.getElementById('phacOptimize').addEventListener('click',()=>{
+ const byId=id=>document.getElementById(id),out=byId('phacOptResults');
+ const min=byId('phacOptMin').valueAsNumber,max=byId('phacOptMax').valueAsNumber;
+ if(!Number.isInteger(min)||!Number.isInteger(max)||min<0||max>40||min>max){out.textContent='Enter a valid whole-number irrigation range from 0 to 40 mm.';return}
+ const rate=+byId('phacRate').value,months=+byId('phacMonths').value;
+ if(rate>100){out.textContent='Set the lime projection to 100% of the prescription or less before comparing.';return}
+ const result=phacOptimizeCandidates(min,max,rate,months,phacScenarioState);
+ const row=(name,r,base)=>'<tr><th scope="row">'+name+'</th><td>'+r.label+'</td><td>'+r.irrigation+'</td>'+['quality','yieldIdx'].map(k=>'<td>'+r[k].toFixed(2)+(base?'':' ('+((r[k]-result.baseline[k])>=0?'+':'')+(r[k]-result.baseline[k]).toFixed(2)+')')+'</td>').join('')+'</tr>';
+ out.innerHTML='<p>'+result.count+' combinations · lime projection: '+rate+'% at '+months+' months. Parentheses show change versus baseline. Ties favor the other score, then less irrigation.</p><table><thead><tr><th>Result</th><th>Soil</th><th>Irrigation (mm)</th><th>Crop Quality</th><th>Yield Index</th></tr></thead><tbody>'+row('Current-soil baseline',{...result.baseline,label:'Current soil',irrigation:phacScenarioState.irrigation},true)+row('Best quality',result.quality)+row('Best yield',result.yield)+'</tbody></table>';
+ const context=document.createElement('p');context.textContent='Inputs: '+phacScenarioLabel;out.prepend(context);
+});
+for(const id of ['phacOptMin','phacOptMax'])document.getElementById(id).addEventListener('input',()=>{document.getElementById('phacOptResults').textContent='Run comparison for the new range.'});
+
 let phacMode='current';
 function phacStatus(value,item){return value<item.min?'low':value>item.max?'high':'ok'}
 function phacFitness(value,item){if(value>=item.min&&value<=item.max)return 100;const span=Math.max(.01,item.max-item.min),distance=value<item.min?item.min-value:value-item.max;return Math.max(0,100-distance/span*50)}
 function renderPhacSoil(){
+ const optOut=document.getElementById("phacOptResults");if(optOut?.querySelector("table"))optOut.textContent="Inputs changed. Run comparison again.";
  const neutral=phacMode==='neutral',rate=+document.getElementById('phacRate').value,months=+document.getElementById('phacMonths').value,maturity=Math.min(1,months/6),factor=phacMode==='lime'?rate/100*maturity:0;
  document.getElementById('phacRate').disabled=neutral;document.getElementById('phacMonths').disabled=neutral;document.getElementById('phacRateOut').textContent=rate+'%';document.getElementById('phacMonthsOut').textContent=months+' month'+(months===1?'':'s');document.getElementById('phacDose').textContent=neutral?'Not applied':Math.round(1068*rate/100).toLocaleString()+' kg';
  const values=neutral?PHAC_SCENARIO_BASE_VALUES.map(item=>({...item})):PHAC_SOIL.map(item=>({...item,projected:item.current+item.effect*factor})),score=Math.round(values.reduce((sum,item)=>sum+phacFitness(item.projected,item),0)/values.length);
